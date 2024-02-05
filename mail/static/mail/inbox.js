@@ -38,13 +38,13 @@ function view_email(id) {
       document.querySelector('#email-detail-view').style.display = 'block';
 
       document.querySelector('#email-detail-view').innerHTML = `
-      <ul class="list-group">
-        <li class="list-group-item"><strong>From:</strong> ${email.sender}</li>
-        <li class="list-group-item"><strong>To:</strong> ${email.recipient}</li>
-        <li class="list-group-item"><strong>Subject:</strong> ${email.subject}</li>
-        <li class="list-group-item"><strong>Timestamp:</strong> ${email.timestamp}</li>
-        <li class="list-group-item">${email.body}</li>
+      <ul style="list-style-type: none; margin: 0; padding: 0;">
+        <li><strong>From:</strong> ${email.sender}</li>
+        <li><strong>To:</strong> ${email.recipients}</li>
+        <li><strong>Subject:</strong> ${email.subject}</li>
+        <li><strong>Timestamp:</strong> ${email.timestamp}</li>
       </ul>
+      <hr>
       `
 
       //Change to read
@@ -60,7 +60,7 @@ function view_email(id) {
       //Archive function
       const btn_arch = document.createElement('button');
       btn_arch.innerHTML = email.archived ? "Unarchived" : "Archive"
-      btn_arch.className = email.archived ? "btn btn-success" : "btn btn-danger";
+      btn_arch.className = "btn btn-sm btn-outline-primary";
       btn_arch.style.marginRight = "10px";
       btn_arch.addEventListener('click', function() {
         fetch(`/emails/${email.id}`, {
@@ -76,7 +76,7 @@ function view_email(id) {
       //Reply function
       const btn_reply = document.createElement('button');
       btn_reply.innerHTML = "Reply";
-      btn_reply.className = "btn btn-info";
+      btn_reply.className = "btn btn-sm btn-outline-primary";
       btn_reply.addEventListener('click', function() {
         
           compose_email();
@@ -86,10 +86,20 @@ function view_email(id) {
             subject = "Re: " + email.subject;
           }
           document.querySelector('#compose-subject').value = subject;
-          document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} wrote: ${email.body}`;
+          document.querySelector('#compose-body').value = `On ${email.timestamp} ${email.sender} wrote: ${email.body}\n`;
 
       });
       document.querySelector('#email-detail-view').append(btn_reply);
+      
+      //append body
+      const body = document.createElement('div');
+      body.innerHTML = '<hr>';
+      // Split the email body by line breaks and create a text node for each line
+      email.body.split('\n').forEach(line => {
+          body.appendChild(document.createTextNode(line));
+          body.appendChild(document.createElement('br')); 
+      });
+      document.querySelector('#email-detail-view').appendChild(body);
   });
 }
 
@@ -113,14 +123,14 @@ function load_mailbox(mailbox) {
       emails.forEach(email => {
         console.log(email);
         const newEmail = document.createElement('div');
-        newEmail.className="list-group-item";
+        
         newEmail.innerHTML = `
           <h5>Sender: ${email.sender}</h5>
           <h5>Subject: ${email.subject}</h5>
           <p>${email.timestamp}</p>
         `;
         // Change color of read
-        newEmail.className = email.read ? 'read':'unread';
+        newEmail.className = email.read ? 'list-group-item read' : 'list-group-item unread border-style';
         //Add click event to view email
         newEmail.addEventListener('click', function() {
           view_email(email.id);

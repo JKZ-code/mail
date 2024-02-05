@@ -10,3 +10,6 @@ textarea {
     background-attachment: white;
 }
 
+.border-style{
+    border: 1px solid black;
+}
